@@ -1,21 +1,17 @@
 <?php
-// contact_process.php est la cible du formulaire qui se trouve dans contact.php
-// C'est donc le fichier qui va se charger du traitement des données de formulaire
+require_once 'src/Db/functions.php';
 
-$tab = ["test", "test 2"];
+$email = $_POST['email'];
+$message = $_POST['message'];
 
-foreach ($tab as $index => $value) {
-    echo $index . " - " . $value . "<br />";
-}
+$pdo = getPdoInstance();
 
-// Dans le cadre d'un formulaire avec la méthode POST, PHP va remplir automatiquement le tableau associatif $_POST
-// Dans ce tableau, chaque clé correspondra à l'attribut "name" d'un champ de formulaire et chaque valeur associée sera la valeur renseignée par l'utilisateur dans le formulaire
-var_dump($_POST);
+$stmt = $pdo->prepare("INSERT INTO contact (email, message) VALUES (:email, :mess)");
 
-// Cete boucle foreach permet d'afficher les noms des champs de formulaire et leur valeur
-// La syntaxe de décomposition en clé => valeur nous permet d'afficher tous les champs, quels qu'ils soient
-foreach($_POST as $formField => $val) { ?>
-    <p>
-        <?php echo $formField; ?> : <?php echo $val; ?>
-    </p>
-<?php } ?>
+$res = $stmt->execute([
+    "email" => $email,
+    "mess" => $message
+]);
+
+echo ($res) ?
+    "Votre demande a bien été enregistrée" : "Une erreur est survenue lors de l'enregistrement de votre demande";
